@@ -31,19 +31,22 @@ void gpio_irq_handler(uint gpio, uint32_t event_mask) {
         if (gpio == BUTTON_A) {
             rgb_clean_except(LED_GREEN);
             gpio_put(LED_GREEN, !gpio_get(LED_GREEN));
-            printf("O LED_GREEN foi alterado\n!");
+            printf("O LED_GREEN foi alterado!\n");
         }
         if (gpio == BUTTON_B) {
             rgb_clean_except(LED_BLUE);
             gpio_put(LED_BLUE, !gpio_get(LED_BLUE));
-            printf("O LED_BLUE foi alterado\n!");
-
-
+            printf("O LED_BLUE foi alterado!\n");
         }
+        if (!gpio_get(BUTTON_BOOTSEL)) {
+            rom_reset_usb_boot(0, 0);
+        }
+        
         last_time = current_time;
     }
 
 }
+
 int main()
 {
     stdio_init_all();
@@ -76,13 +79,13 @@ int main()
 
     gpio_set_irq_enabled_with_callback(BUTTON_A, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
     gpio_set_irq_enabled_with_callback(BUTTON_B, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
+    gpio_set_irq_enabled_with_callback(BUTTON_BOOTSEL, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
 
+    char c;
     while (true) {
 
-        if (!gpio_get(BUTTON_BOOTSEL)) {
-            rom_reset_usb_boot(0, 0);
-        }
-        //desenha_numeros(count_numbers);
         sleep_ms(200);
+        scanf("%c", &c);
+        printf("Pressionado foi o %c\n", c);
     }
 }

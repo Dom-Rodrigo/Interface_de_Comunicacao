@@ -135,7 +135,7 @@ int main()
         ssd1306_draw_string(&ssd, "Rodrigo Piropo", 8, 48); // Desenha uma string      
         // Desenha uma string
         ssd1306_send_data(&ssd); // Atualiza o display
-        printf("Ultimo presionado foi o: %c\n", last);
+        printf("Ultimo caractere presionado foi: '%c' em ASCI: %d \n", last, last);
         desenha_numeros(c-48);
         sleep_ms(200);
     }

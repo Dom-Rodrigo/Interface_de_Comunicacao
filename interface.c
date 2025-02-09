@@ -87,5 +87,6 @@ int main()
         sleep_ms(200);
         scanf("%c", &c);
         printf("Pressionado foi o %c\n", c);
+        desenha_numeros(c-48);
     }
 }

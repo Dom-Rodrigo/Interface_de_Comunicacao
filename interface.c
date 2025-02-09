@@ -30,6 +30,8 @@ void rgb_clean_except(int exception_led){
 
 uint count_numbers = 0;
 uint32_t last_time;
+bool led_green_up = false;
+bool led_blue_up = false;
 void gpio_irq_handler(uint gpio, uint32_t event_mask) {
     uint32_t current_time = to_us_since_boot(get_absolute_time());
 
@@ -38,11 +40,16 @@ void gpio_irq_handler(uint gpio, uint32_t event_mask) {
             rgb_clean_except(LED_GREEN);
             gpio_put(LED_GREEN, !gpio_get(LED_GREEN));
             printf("O LED_GREEN foi alterado!\n");
+            led_green_up = !led_green_up;
+            led_blue_up = false;
         }
         if (gpio == BUTTON_B) {
             rgb_clean_except(LED_BLUE);
             gpio_put(LED_BLUE, !gpio_get(LED_BLUE));
             printf("O LED_BLUE foi alterado!\n");
+            led_blue_up = !led_blue_up;
+            led_green_up = false;
+
         }
         if (!gpio_get(BUTTON_BOOTSEL)) {
             rom_reset_usb_boot(0, 0);
@@ -103,17 +110,31 @@ int main()
     gpio_set_irq_enabled_with_callback(BUTTON_BOOTSEL, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
 
     char c;
+    char last;
     bool cor = true;
     while (true) {
 
-        scanf("%c", &c);
+        c = getchar_timeout_us(0);
+        if (c != 254){
+            last = c;
+        }
         cor = !cor;
         // Atualiza o conteúdo do display com animações
         ssd1306_fill(&ssd, !cor); // Limpa o display
         ssd1306_rect(&ssd, 3, 3, 122, 58, cor, !cor); // Desenha um retângulo
-        ssd1306_draw_char(&ssd, c, 64, 32); // Desenha uma string
+        ssd1306_draw_string(&ssd, "0 LEDS ACESOS", 8, 10); // Desenha uma string
+        if (led_blue_up){
+            ssd1306_draw_string(&ssd, "AZUL ACESO   ", 8, 10); // Desenha uma string
+        }
+        if (led_green_up){
+            ssd1306_draw_string(&ssd, "VERDE ACESO   ", 8, 10); // Desenha uma string
+        }
+        ssd1306_draw_string(&ssd, "CARACTER", 8, 30); // Desenha uma string  
+        ssd1306_draw_char(&ssd, last, 80, 30); // Desenha uma string
+        ssd1306_draw_string(&ssd, "RODRIGO PIROPO", 8, 48); // Desenha uma string      
+        // Desenha uma string
         ssd1306_send_data(&ssd); // Atualiza o display
-        printf("Pressionado foi o %c\n", c);
+        printf("Ultimo presionado foi o %c\n", last);
         desenha_numeros(c-48);
         sleep_ms(200);
     }

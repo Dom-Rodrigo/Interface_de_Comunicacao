@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(interface interface.c )
+add_executable(interface interface.c inc/ssd1306.c)
 
 pico_set_program_name(interface "interface")
 pico_set_program_version(interface "0.1")
@@ -60,6 +60,7 @@ target_include_directories(interface PRIVATE
 target_link_libraries(interface 
         hardware_pio
         pico_bootrom
+        hardware_i2c
         )
 
 pico_add_extra_outputs(interface)

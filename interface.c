@@ -5,6 +5,8 @@
 #include "digitos.h"
 #include "write_matrix.h"
 #include "pico/bootrom.h"
+#include "inc/ssd1306.h"
+#include "inc/font.h"
 
 #define LED_MATRIZ 7
 #define LED_RED 13
@@ -13,6 +15,10 @@
 #define BUTTON_A 5
 #define BUTTON_B 6
 #define BUTTON_BOOTSEL 22
+#define I2C_PORT i2c1
+#define I2C_SDA 14
+#define I2C_SCL 15
+#define endereco 0x3C
 
 
 void rgb_clean_except(int exception_led){
@@ -55,6 +61,21 @@ int main()
     npClear();
     npWrite();
 
+    // I2C Initialisation. Using it at 400Khz.
+    i2c_init(I2C_PORT, 400 * 1000);
+
+    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C); // Set the GPIO pin function to I2C
+    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C); // Set the GPIO pin function to I2C
+    gpio_pull_up(I2C_SDA); // Pull up the data line
+    gpio_pull_up(I2C_SCL); // Pull up the clock line
+    ssd1306_t ssd; // Inicializa a estrutura do display
+    ssd1306_init(&ssd, WIDTH, HEIGHT, false, endereco, I2C_PORT); // Inicializa o display
+    ssd1306_config(&ssd); // Configura o display
+    ssd1306_send_data(&ssd); // Envia os dados para o display
+
+    // Limpa o display. O display inicia com todos os pixels apagados.
+    ssd1306_fill(&ssd, false);
+    ssd1306_send_data(&ssd);
 
     gpio_init(LED_RED);
     gpio_set_dir(LED_RED, GPIO_OUT);
@@ -82,11 +103,18 @@ int main()
     gpio_set_irq_enabled_with_callback(BUTTON_BOOTSEL, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
 
     char c;
+    bool cor = true;
     while (true) {
 
-        sleep_ms(200);
         scanf("%c", &c);
+        cor = !cor;
+        // Atualiza o conteúdo do display com animações
+        ssd1306_fill(&ssd, !cor); // Limpa o display
+        ssd1306_rect(&ssd, 3, 3, 122, 58, cor, !cor); // Desenha um retângulo
+        ssd1306_draw_char(&ssd, c, 64, 32); // Desenha uma string
+        ssd1306_send_data(&ssd); // Atualiza o display
         printf("Pressionado foi o %c\n", c);
         desenha_numeros(c-48);
+        sleep_ms(200);
     }
 }

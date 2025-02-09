@@ -129,12 +129,12 @@ int main()
         if (led_green_up){
             ssd1306_draw_string(&ssd, "VERDE ACESO   ", 8, 10); // Desenha uma string
         }
-        ssd1306_draw_string(&ssd, "CARACTER", 8, 30); // Desenha uma string  
+        ssd1306_draw_string(&ssd, "CARACTER ", 8, 30); // Desenha uma string  
         ssd1306_draw_char(&ssd, last, 80, 30); // Desenha uma string
-        ssd1306_draw_string(&ssd, "RODRIGO PIROPO", 8, 48); // Desenha uma string      
+        ssd1306_draw_string(&ssd, "Rodrigo Piropo", 8, 48); // Desenha uma string      
         // Desenha uma string
         ssd1306_send_data(&ssd); // Atualiza o display
-        printf("Ultimo presionado foi o %c\n", last);
+        printf("Ultimo presionado foi o: %c\n", last);
         desenha_numeros(c-48);
         sleep_ms(200);
     }

@@ -42,6 +42,7 @@ void gpio_irq_handler(uint gpio, uint32_t event_mask) {
             printf("O LED_GREEN foi alterado!\n");
             led_green_up = !led_green_up;
             led_blue_up = false;
+            last_time = current_time;
         }
         if (gpio == BUTTON_B) {
             rgb_clean_except(LED_BLUE);
@@ -49,13 +50,13 @@ void gpio_irq_handler(uint gpio, uint32_t event_mask) {
             printf("O LED_BLUE foi alterado!\n");
             led_blue_up = !led_blue_up;
             led_green_up = false;
+            last_time = current_time;
 
         }
         if (!gpio_get(BUTTON_BOOTSEL)) {
             rom_reset_usb_boot(0, 0);
         }
         
-        last_time = current_time;
     }
 
 }

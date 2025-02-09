@@ -1,5 +1,8 @@
 # Interfaces de comunicação. Display e UART
+## Como funciona?
+Demonstração no youtube:
 
+[![Video do funcionamento](https://img.youtube.com/vi/ljuhYQRBzM4/0.jpg)](https://www.youtube.com/watch?v=ljuhYQRBzM4)
 ## Como compilar?
 
 ### No VSCode
